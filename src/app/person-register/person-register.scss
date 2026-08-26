@@ -1,26 +1,557 @@
-$direction: rtl;
-$textAlign: center;
-$fontFamily: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-$fontSize: 1.2rem;
+// ============================================
+// استایل حرفه‌ای فرم ثبت‌نام
+// با استفاده از CSS Variables, Flexbox, Grid
+// و طراحی مدرن با انیمیشن‌های نرم
+// ============================================
 
-form {
-  direction: $direction;
-  text-align: $textAlign;
-  font-family: $fontFamily;
-  font-size: $fontSize;
+// ===== CSS Variables =====
+:host {
+  --primary-color: #4f46e5;
+  --primary-hover: #4338ca;
+  --primary-light: #eef2ff;
+  --success-color: #10b981;
+  --error-color: #ef4444;
+  --warning-color: #f59e0b;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --bg-white: #ffffff;
+  --bg-gray: #f8fafc;
+  --border-color: #e2e8f0;
+  --border-focus: #4f46e5;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --radius: 12px;
+  --radius-sm: 6px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --font-family: 'Segoe UI', 'Vazirmatn', system-ui, -apple-system, sans-serif;
 }
 
-@mixin warning-box {
-  color: red;
-  margin: 5px;
-  font-weight: bold;
+// ===== Container =====
+.form-container {
+  max-width: 640px;
+  margin: 2rem auto;
+  padding: 2rem 2.5rem;
+  background: var(--bg-white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--border-color);
+  font-family: var(--font-family);
+  transition: var(--transition);
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
 }
 
+// ===== Title =====
+.form-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &::after {
+    content: '';
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(to right, var(--primary-color), transparent);
+    margin-right: 0.5rem;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 1.4rem;
+  }
+}
+
+.form-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin: -0.25rem 0 1.75rem 0;
+  border-right: 3px solid var(--primary-color);
+  padding-right: 0.75rem;
+}
+
+// ===== Form =====
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+// ===== Form Group =====
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+// ===== Label =====
+.form-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+
+  .required-star {
+    color: var(--error-color);
+    font-size: 1.1rem;
+    margin-right: 0.1rem;
+  }
+
+  .optional-badge {
+    font-size: 0.7rem;
+    font-weight: 400;
+    color: var(--text-muted);
+    background: var(--bg-gray);
+    padding: 0.1rem 0.5rem;
+    border-radius: 9999px;
+  }
+}
+
+// ===== Input =====
+.form-input {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  font-size: 0.95rem;
+  font-family: var(--font-family);
+  color: var(--text-primary);
+  background: var(--bg-white);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+  outline: none;
+
+  &::placeholder {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+
+  &:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+  }
+
+  &:hover:not(:focus) {
+    border-color: #cbd5e1;
+  }
+
+  &.ng-invalid.ng-touched {
+    border-color: var(--error-color);
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+
+    &:focus {
+      border-color: var(--error-color);
+      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15);
+    }
+  }
+
+  &.ng-valid.ng-touched {
+    border-color: var(--success-color);
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+  }
+}
+
+// ===== Textarea =====
+.form-textarea {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  font-size: 0.95rem;
+  font-family: var(--font-family);
+  color: var(--text-primary);
+  background: var(--bg-white);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+  outline: none;
+  resize: vertical;
+  min-height: 80px;
+
+  &::placeholder {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+
+  &:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+  }
+
+  &:hover:not(:focus) {
+    border-color: #cbd5e1;
+  }
+}
+
+// ===== Select =====
+.form-select {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  font-size: 0.95rem;
+  font-family: var(--font-family);
+  color: var(--text-primary);
+  background: var(--bg-white);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+  outline: none;
+  appearance: auto;
+  cursor: pointer;
+
+  &:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+  }
+
+  &:hover:not(:focus) {
+    border-color: #cbd5e1;
+  }
+}
+
+// ===== File Input =====
+.form-file {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+
+  .file-input-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+
+    .file-input {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    .file-input-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1.2rem;
+      background: var(--bg-gray);
+      border: 2px dashed var(--border-color);
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition);
+
+      &:hover {
+        border-color: var(--primary-color);
+        background: var(--primary-light);
+        color: var(--primary-color);
+      }
+    }
+  }
+
+  .file-preview {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    .file-preview-image {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--primary-color);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .file-preview-name {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      max-width: 120px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+}
+
+// ===== Radio Group =====
+.radio-group {
+  display: flex;
+  gap: 1.5rem;
+  padding-top: 0.25rem;
+  flex-wrap: wrap;
+
+  .radio-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--radius-sm);
+    transition: var(--transition);
+
+    &:hover {
+      background: var(--bg-gray);
+    }
+
+    input[type='radio'] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary-color);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .radio-label {
+      font-size: 0.95rem;
+      color: var(--text-primary);
+    }
+  }
+}
+
+// ===== Checkbox =====
+.checkbox-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-gray);
+  border-radius: var(--radius-sm);
+  border: 2px solid transparent;
+  transition: var(--transition);
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--border-color);
+  }
+
+  input[type='checkbox'] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--primary-color);
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+
+  .checkbox-label {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    cursor: pointer;
+  }
+
+  &.ng-invalid.ng-touched {
+    border-color: var(--error-color);
+    background: rgba(239, 68, 68, 0.05);
+  }
+}
+
+// ===== Warning Box =====
 .warning-box-input {
-  @include warning-box;
-  font-size: $fontSize * 0.7;
+  font-size: 0.8rem;
+  color: var(--error-color);
+  background: rgba(239, 68, 68, 0.08);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  border-right: 3px solid var(--error-color);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  animation: shakeFade 0.4s ease;
+
+  &::before {
+    content: '⚠️';
+    font-size: 0.9rem;
+  }
 }
 
-h2 {
-  text-align: $textAlign;
+// ===== Submit Button =====
+.submit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: var(--font-family);
+  color: white;
+  background: var(--primary-color);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+  margin-top: 0.5rem;
+  min-height: 50px;
+
+  &:hover:not(:disabled) {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+  }
+
+  // Loading state
+  &.loading {
+    background: var(--text-muted);
+    cursor: wait;
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 0.8s linear infinite;
+  }
+}
+
+// ===== Animations =====
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes shakeFade {
+  0% {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  50% {
+    transform: translateX(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ===== Responsive =====
+@media (max-width: 480px) {
+  .form-container {
+    padding: 1rem;
+  }
+
+  .radio-group {
+    gap: 0.75rem;
+
+    .radio-option {
+      padding: 0.3rem 0.6rem;
+      font-size: 0.85rem;
+    }
+  }
+
+  .form-file {
+    flex-direction: column;
+    align-items: stretch;
+
+    .file-preview {
+      justify-content: center;
+    }
+  }
+
+  .submit-btn {
+    width: 100%;
+  }
+
+  .form-title {
+    font-size: 1.2rem;
+  }
+}
+
+// ===== Dark Mode Support =====
+@media (prefers-color-scheme: dark) {
+  :host {
+    --bg-white: #1e293b;
+    --bg-gray: #0f172a;
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --border-color: #334155;
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+  }
+
+  .form-container {
+    border-color: var(--border-color);
+  }
+
+  .form-input,
+  .form-select,
+  .form-textarea {
+    background: #0f172a;
+    color: var(--text-primary);
+    border-color: var(--border-color);
+
+    &::placeholder {
+      color: var(--text-muted);
+    }
+  }
+
+  .checkbox-wrapper {
+    background: #0f172a;
+
+    &:hover {
+      border-color: var(--border-color);
+    }
+  }
+
+  .file-input-button {
+    background: #0f172a;
+    border-color: var(--border-color);
+    color: var(--text-secondary);
+
+    &:hover {
+      border-color: var(--primary-color);
+      background: rgba(79, 70, 229, 0.15);
+    }
+  }
+
+  .radio-option:hover {
+    background: #0f172a;
+  }
+
+  .form-subtitle {
+    color: var(--text-secondary);
+  }
+
+  .warning-box-input {
+    background: rgba(239, 68, 68, 0.15);
+  }
 }

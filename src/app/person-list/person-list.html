@@ -1,111 +1,201 @@
-<div>
-    <div>
-        <h2>لیست کاربران ثبت شده</h2>
-        <button (click)="refresh()" [disabled]="isLoading()">
-            {{ isLoading() ? 'در حال بارگذاری...' : 'بروزرسانی' }}
-        </button>
-    </div>
+<!-- ============================================ -->
+<!-- لیست کاربران با کلاس‌های SCSS جدید            -->
+<!-- ============================================ -->
 
-    @if (errorMessage()) {
-    <div>
-        {{ errorMessage() }}
-        <button (click)="refresh()">تلاش مجدد</button>
-    </div>
-    }
+<div class="list-container">
 
-    @if (isLoading()) {
-    <div>در حال دریافت اطلاعات...</div>
-    }
+    <!-- ===== Header ===== -->
+    <div class="list-header">
+        <h2 class="list-title">
+            <span class="title-icon">📋</span>
+            لیست کاربران
+            <span class="title-count">{{ persons().length }}</span>
+        </h2>
 
-    @if (!isLoading() && persons().length === 0) {
-    <div>هیچ کاربری ثبت نشده است</div>
-    }
-
-    @if (!isLoading() && persons().length > 0) {
-    <table>
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>عکس</th> <!-- ← ستون جدید -->
-                <th>نام کامل</th>
-                <th>ایمیل</th>
-                <th>جنسیت</th>
-                <th>شهر</th>
-                <th>قوانین</th>
-                <th>عملیات</th>
-            </tr>
-        </thead>
-        <tbody>
-            @for (person of persons(); track person.id; let i = $index) {
-            <tr>
-                <td>{{ i + 1 }}</td>
-                <td>
-                    @if (person.avatar) {
-                    <img [src]="person.avatar" width="50" height="50" style="border-radius: 50%;">
-                    } @else {
-                    <span>بدون عکس</span>
-                    }
-                </td>
-                <td>{{ person.fullName }}</td>
-                <td>{{ person.emailAddress }}</td>
-                <td>
-                    @if (person.gender === Gender.Male) {
-                    مرد
-                    } @else {
-                    زن
-                    }
-                </td>
-                <td>
-                    @for (city of cityList; track city.value) {
-                    @if (city.value === person.city) {
-                    {{ city.label }}
-                    }
-                    }
-                </td>
-                <td>
-                    @if (person.acceptRules) {
-                    بله
-                    } @else {
-                    خیر
-                    }
-                </td>
-                <td>
-                    <button (click)="viewPerson(person)">جزئیات</button>
-                </td>
-            </tr>
-            }
-        </tbody>
-    </table>
-
-    <div>تعداد کل: {{ persons().length }} کاربر</div>
-    }
-
-    @if (selectedPerson()) {
-    <div (click)="closeModal()">
-        <div (click)="$event.stopPropagation()">
-            <button (click)="closeModal()">بستن</button>
-            <h3>جزئیات کاربر</h3>
-            <div>
-                <!-- عکس در مودال -->
-                @if (selectedPerson()?.avatar) {
-                <div>
-                    <img [src]="selectedPerson()?.avatar" width="150" height="150" style="border-radius: 50%;">
-                </div>
+        <div class="header-actions">
+            <button class="btn btn-refresh" (click)="refresh()" [disabled]="isLoading()">
+                @if (isLoading()) {
+                <span class="btn-spinner"></span>
+                } @else {
+                🔄
                 }
-                <p><strong>نام:</strong> {{ selectedPerson()?.fullName }}</p>
-                <p><strong>ایمیل:</strong> {{ selectedPerson()?.emailAddress }}</p>
-                <p><strong>جنسیت:</strong>
-                    @if (selectedPerson()?.gender === Gender.Male) { مرد } @else { زن }
-                </p>
-                <p><strong>شهر:</strong>
-                    @for (city of cityList; track city.value) {
-                    @if (city.value === selectedPerson()?.city) {
-                    {{ city.label }}
-                    }}
-                </p>
-                <p><strong>توضیحات:</strong> {{ selectedPerson()?.description || 'ندارد' }}</p>
+                {{ isLoading() ? 'در حال بارگذاری...' : 'بروزرسانی' }}
+            </button>
+
+            <button class="btn btn-delete-group" (click)="deleteSelected()"
+                [disabled]="isLoading() || selectedIds().size === 0">
+                🗑️ حذف انتخاب شده‌ها
+                <span class="delete-count">{{ selectedIds().size }}</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ===== Error State ===== -->
+    @if (errorMessage()) {
+    <div class="status-box status-error">
+        <span class="status-message">⚠️ {{ errorMessage() }}</span>
+        <button class="status-btn" (click)="refresh()">تلاش مجدد</button>
+    </div>
+    }
+
+    <!-- ===== Loading State ===== -->
+    @if (isLoading()) {
+    <div class="status-box status-loading">
+        <span class="status-message">⏳ در حال دریافت اطلاعات...</span>
+    </div>
+    }
+
+    <!-- ===== Empty State ===== -->
+    @if (!isLoading() && persons().length === 0) {
+    <div class="status-box status-empty">
+        📭 هیچ کاربری ثبت نشده است
+    </div>
+    }
+
+    <!-- ===== Table ===== -->
+    @if (!isLoading() && persons().length > 0) {
+    <div class="table-wrapper">
+        <table class="person-table">
+            <thead>
+                <tr>
+                    <th>
+                        <input type="checkbox" class="checkbox-all" [checked]="isAllSelected()"
+                            (change)="toggleAllSelection($event)" [disabled]="persons().length === 0">
+                    </th>
+                    <th>#</th>
+                    <th>عکس</th>
+                    <th>نام کامل</th>
+                    <th>ایمیل</th>
+                    <th>جنسیت</th>
+                    <th>شهر</th>
+                    <th>قوانین</th>
+                    <th>عملیات</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (person of persons(); track person.id; let i = $index) {
+                <tr [class.row-selected]="isSelected(person.id)">
+                    <td>
+                        <input type="checkbox" class="row-checkbox" [checked]="isSelected(person.id)"
+                            (change)="toggleSelection(person.id, $event)">
+                    </td>
+                    <td>{{ i + 1 }}</td>
+                    <td>
+                        <div class="avatar-container">
+                            @let avatarData = getAvatar(person);
+                            @if (avatarData) {
+                            <img [src]="avatarData" alt="عکس کاربر" class="avatar-image">
+                            } @else {
+                            <div class="avatar-placeholder">بدون عکس</div>
+                            }
+                        </div>
+                    </td>
+                    <td>{{ person.fullName }}</td>
+                    <td>{{ person.emailAddress }}</td>
+                    <td>
+                        <span class="gender-badge" [class.gender-male]="person.gender === Gender.Male"
+                            [class.gender-female]="person.gender === Gender.Female">
+                            @if (person.gender === Gender.Male) { 👨 } @else { 👩 }
+                            @if (person.gender === Gender.Male) { مرد } @else { زن }
+                        </span>
+                    </td>
+                    <td>
+                        @for (city of cityList; track city.value) {
+                        @if (city.value === person.city) {
+                        {{ city.label }}
+                        }
+                        }
+                    </td>
+                    <td>
+                        <span class="rule-badge" [class.rule-accepted]="person.acceptRules"
+                            [class.rule-rejected]="!person.acceptRules">
+                            @if (person.acceptRules) { ✅ } @else { ❌ }
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-action btn-view" (click)="viewPerson(person)" title="جزئیات">👁️</button>
+                            <button class="btn-action btn-delete" (click)="deletePerson(person.id)"
+                                title="حذف">🗑️</button>
+                        </div>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- ===== Footer ===== -->
+        <div class="table-footer">
+            <div class="footer-stats">
+                <span class="stat-item">
+                    📊 تعداد کل: <span class="stat-number">{{ persons().length }}</span> کاربر
+                </span>
+                <span class="stat-item stat-selected">
+                    ✅ انتخاب شده: <span class="stat-number">{{ selectedIds().size }}</span> کاربر
+                </span>
+            </div>
+        </div>
+    </div>
+    }
+
+    <!-- ===== Modal ===== -->
+    @if (selectedPerson()) {
+    <div class="modal-overlay" (click)="closeModal()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+            <button class="modal-close" (click)="closeModal()">✕</button>
+
+            <h3 class="modal-title">👤 جزئیات کاربر</h3>
+
+            <div class="modal-avatar">
+                @let avatarModalData = getAvatar(selectedPerson());
+                @if (avatarModalData) {
+                <img [src]="avatarModalData" alt="عکس کاربر">
+                } @else {
+                <div
+                    style="width:120px;height:120px;border-radius:50%;background:var(--bg-gray);margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:3rem;border:4px solid var(--border-color);">
+                    👤</div>
+                }
+            </div>
+
+            <div class="modal-body">
+                <div class="modal-row">
+                    <span class="modal-label">نام کامل</span>
+                    <span class="modal-value">{{ selectedPerson()?.fullName }}</span>
+                </div>
+                <div class="modal-row">
+                    <span class="modal-label">ایمیل</span>
+                    <span class="modal-value">{{ selectedPerson()?.emailAddress }}</span>
+                </div>
+                <div class="modal-row">
+                    <span class="modal-label">جنسیت</span>
+                    <span class="modal-value">
+                        @if (selectedPerson()?.gender === Gender.Male) { 👨 مرد } @else { 👩 زن }
+                    </span>
+                </div>
+                <div class="modal-row">
+                    <span class="modal-label">شهر</span>
+                    <span class="modal-value">
+                        @for (city of cityList; track city.value) {
+                        @if (city.value === selectedPerson()?.city) {
+                        {{ city.label }}
+                        }}
+                    </span>
+                </div>
+                <div class="modal-row">
+                    <span class="modal-label">قوانین</span>
+                    <span class="modal-value">
+                        @if (selectedPerson()?.acceptRules) { ✅ پذیرفته شده } @else { ❌ پذیرفته نشده }
+                    </span>
+                </div>
+                <div class="modal-row">
+                    <span class="modal-label">توضیحات</span>
+                    <span class="modal-value">{{ selectedPerson()?.description || 'ندارد' }}</span>
+                </div>
                 @if (selectedPerson()?.createdAt) {
-                <p><strong>تاریخ ثبت:</strong> {{ selectedPerson()?.createdAt }}</p>
+                <div class="modal-row">
+                    <span class="modal-label">تاریخ ثبت</span>
+                    <span class="modal-value">{{ selectedPerson()?.createdAt }}</span>
+                </div>
                 }
             </div>
         </div>
