@@ -33,6 +33,7 @@
           },
           "configurations": {
             "production": {
+              "baseHref": "/dopaNGect/",
               "budgets": [
                 {
                   "type": "initial",
