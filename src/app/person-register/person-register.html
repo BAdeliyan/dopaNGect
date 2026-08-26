@@ -1,0 +1,107 @@
+<h2>فرم ثبت‌نام کاربر</h2>
+<form #registerForm="ngForm" (ngSubmit)="onSubmit()">
+
+    <!-- 1. نام و نام خانوادگی -->
+    <div>
+        <label for="fullNameInput">نام و نام خانوادگی: </label>
+        <input id="fullNameInput" type="text" name="fullName" [(ngModel)]="personForm.fullName" required
+            #fullNameRef="ngModel" placeholder="مثال: علی رضایی">
+
+        @if (fullNameRef.invalid && fullNameRef.touched) {
+        <div class="warning-box-input">⚠️ نام الزامی است</div>
+        }
+    </div>
+
+    <!-- 2. ایمیل -->
+    <div>
+        <label for="emailAddressInput">ایمیل: </label>
+        <input id="emailAddressInput" type="email" name="emailAddress" [(ngModel)]="personForm.emailAddress" required
+            email #emailAddressRef="ngModel" placeholder="example@gmail.com">
+
+        @if (emailAddressRef.invalid && emailAddressRef.touched) {
+        <div class="warning-box-input">⚠️ ایمیل معتبر وارد کنید</div>
+        }
+    </div>
+
+    <!-- 3. رمز عبور -->
+    <div>
+        <label for="passwordInput">رمز عبور: </label>
+        <input id="passwordInput" type="password" name="password" [(ngModel)]="personForm.password" required
+            minlength="6" #passwordRef="ngModel" placeholder="حداقل ۶ کاراکتر">
+
+        @if (passwordRef.invalid && passwordRef.touched) {
+        <div class="warning-box-input">⚠️ رمز عبور حداقل ۶ کاراکتر باشد</div>
+        }
+    </div>
+
+    <!-- 4. آپلود عکس (NEW) -->
+    <div>
+        <label for="avatarInput">عکس پروفایل: </label>
+        <input id="avatarInput" type="file" name="avatar" (change)="onFileSelected($event)" accept="image/*">
+
+        @if (personForm.avatar) {
+        <div>
+            <img [src]="personForm.avatar" width="100" height="100" style="border-radius: 50%;">
+        </div>
+        }
+    </div>
+
+    <!-- 5. رادیو باتن (جنسیت) -->
+    <div>
+        <label>جنسیت: </label>
+        <div>
+            <label>
+                <input type="radio" name="gender" [value]="Gender.Male" [(ngModel)]="personForm.gender" required
+                    #genderRef="ngModel">
+                👨 مرد
+            </label>
+            <label>
+                <input type="radio" name="gender" [value]="Gender.Female" [(ngModel)]="personForm.gender" required
+                    #genderRef="ngModel">
+                👩 زن
+            </label>
+        </div>
+        @if (genderRef.invalid && genderRef.touched) {
+        <div class="warning-box-input">⚠️ انتخاب جنسیت الزامی است</div>
+        }
+    </div>
+
+    <!-- 6. دراپ‌دان (انتخاب شهر) -->
+    <div>
+        <label for="citySelect">انتخاب شهر: </label>
+        <select id="citySelect" name="city" [(ngModel)]="personForm.city" required #cityRef="ngModel">
+            @for (city of cityList; track city.value) {
+            <option [value]="city.value">{{ city.label }}</option>
+            }
+        </select>
+        @if (cityRef.invalid && cityRef.touched) {
+        <div class="warning-box-input">⚠️ انتخاب شهر الزامی است</div>
+        }
+    </div>
+
+    <!-- 7. چک‌باکس (پذیرش قوانین) -->
+    <div>
+        <label>
+            <input type="checkbox" name="acceptRules" [(ngModel)]="personForm.acceptRules" required
+                #acceptRulesRef="ngModel">
+            ✅ قوانین و مقررات را می‌پذیرم
+        </label>
+        @if (acceptRulesRef.invalid && acceptRulesRef.touched) {
+        <div class="warning-box-input">⚠️ برای ثبت‌نام باید قوانین را بپذیرید</div>
+        }
+    </div>
+
+    <!-- 8. توضیحات (اختیاری) -->
+    <div>
+        <label for="descriptionInput">توضیحات اضافی: </label>
+        <textarea id="descriptionInput" name="description" [(ngModel)]="personForm.description" rows="4"
+            placeholder="توضیحات خود را وارد کنید... (اختیاری)">
+        </textarea>
+    </div>
+
+    <!-- دکمه ارسال -->
+    <button type="submit" [disabled]="registerForm.invalid">
+        📝 ثبت نام
+    </button>
+
+</form>

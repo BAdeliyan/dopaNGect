@@ -1,0 +1,26 @@
+$direction: rtl;
+$textAlign: center;
+$fontFamily: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+$fontSize: 1.2rem;
+
+form {
+  direction: $direction;
+  text-align: $textAlign;
+  font-family: $fontFamily;
+  font-size: $fontSize;
+}
+
+@mixin warning-box {
+  color: red;
+  margin: 5px;
+  font-weight: bold;
+}
+
+.warning-box-input {
+  @include warning-box;
+  font-size: $fontSize * 0.7;
+}
+
+h2 {
+  text-align: $textAlign;
+}
